@@ -173,7 +173,6 @@ public OnPlayerCommandText(playerid, cmdtext[])
 {
 	if (strcmp("/mycommand", cmdtext, true, 10) == 0)
 	{
-		SelectTextDraw ( playerid, 0xFFFFFFFF );
 		return 1;
 	}
 	return 0;
@@ -412,6 +411,11 @@ stock TestWork:setMovingCamera ( playerid )
 	return 1;
 }
 
+stock Float:GetDistanceBetweenPoints(Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2)
+{
+    return floatsqroot((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2));
+}
+
 stock TestWork:stopMovingCamera ( playerid )
 {
 	if ( PlayerInfo [ playerid ] [ playerTimerCamera ] == -1 )
@@ -429,6 +433,38 @@ stock TestWork:stopMovingCamera ( playerid )
     
 	GetPlayerCameraPos ( playerid, CameraX, CameraY, CameraZ );
 	SetPlayerPos ( playerid, CameraX, CameraY, CameraZ - 5.0 );
+	
+	SetCameraBehindPlayer ( playerid );
+
+	new Float:carX,
+		Float:carY,
+		Float:carZ,
+		Float:minDist = 228,
+		vehicleid;
+
+	for ( new i = 0; i < 8; i ++ )
+	{
+		if ( PlayerInfo [ playerid ] [ playerVehilce ] [ i ] == INVALID_VEHICLE_ID )
+			continue;
+
+		printf ( "%i %f", vehicleid, minDist );
+		GetVehiclePos ( PlayerInfo [ playerid ] [ playerVehilce ] [ i ], carX, carY, carZ );
+
+		new Float:distance = GetDistanceBetweenPoints ( CameraX, CameraY, CameraZ - 5.0, carX, carY, carZ );
+		
+		if ( distance > minDist )
+			continue;
+		
+		minDist = distance;
+        vehicleid = PlayerInfo [ playerid ] [ playerVehilce ] [ i ];
+	}
+
+	GetVehiclePos ( vehicleid, carX, carY, carZ );
+	
+	new Float:angle = atan2 ( carY - CameraY, carX - CameraX );
+	angle = 450 - angle;
+	SetPlayerFacingAngle ( playerid, -angle );
+	
 	SetCameraBehindPlayer ( playerid );
 	return 1;
 }
