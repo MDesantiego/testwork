@@ -447,7 +447,6 @@ stock TestWork:stopMovingCamera ( playerid )
 		if ( PlayerInfo [ playerid ] [ playerVehilce ] [ i ] == INVALID_VEHICLE_ID )
 			continue;
 
-		printf ( "%i %f", vehicleid, minDist );
 		GetVehiclePos ( PlayerInfo [ playerid ] [ playerVehilce ] [ i ], carX, carY, carZ );
 
 		new Float:distance = GetDistanceBetweenPoints ( CameraX, CameraY, CameraZ - 5.0, carX, carY, carZ );
@@ -463,6 +462,7 @@ stock TestWork:stopMovingCamera ( playerid )
 	
 	new Float:angle = atan2 ( carY - CameraY, carX - CameraX );
 	angle = 450 - angle;
+	angle = angle > 360 ? angle - 360 : angle;
 	SetPlayerFacingAngle ( playerid, -angle );
 	
 	SetCameraBehindPlayer ( playerid );
